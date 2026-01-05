@@ -2,524 +2,667 @@
 <html lang="es">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <title>La Biblioteca Infinita: Guardianes del Conocimiento</title>
-<meta name="description" content="Juego educativo para clasificar sitios confiables: Sala Segura, Cuarentena o Mostrador de Ayuda." />
+<meta name="description" content="Juego educativo de Ciudadanía Digital. Clasifica sitios web y aprende a navegar seguro." />
 <meta name="theme-color" content="#5e49ff" />
 <style>
   :root{
-    --bg:#0e0b1a; /* noche biblioteca */
-    --panel:#1c1533;
-    --panel-2:#261c47;
-    --accent:#5e49ff; /* magia */
-    --accent-2:#00d4ff; /* brillo */
+    --bg:#0e0b1a; 
+    --panel:rgba(28, 21, 51, 0.95);
+    --accent:#5e49ff; 
+    --accent-light:#8b7dff;
     --safe:#12c48b;
     --warn:#f6c833;
     --danger:#ff5d5d;
     --text:#f6f3ff;
-    --muted:#c9c2e6;
+    --gold: #ffd700;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
+  *{box-sizing:border-box; user-select: none; -webkit-user-select: none;}
+  html,body{height:100%; overflow:hidden;}
   body{
-    margin:0; background: radial-gradient(1200px 800px at 20% -10%, #1d1640, var(--bg)) fixed;
-    color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    line-height:1.25;
+    margin:0; background: radial-gradient(circle at 50% -20%, #2a2055, var(--bg)) fixed;
+    color:var(--text); 
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height:1.4;
   }
+
+  /* --- HEADER --- */
   header{
-    display:flex; gap:.75rem; align-items:center; justify-content:space-between;
-    padding:.75rem 1rem; background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
-    position:sticky; top:0; z-index:10; backdrop-filter: blur(6px);
-    border-bottom:1px solid rgba(255,255,255,.08)
+    display:flex; gap:.5rem; align-items:center; justify-content:space-between;
+    padding:.5rem 1rem; background:rgba(14,11,26,0.85);
+    position:sticky; top:0; z-index:20; backdrop-filter: blur(8px);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    height: 60px;
   }
   .title{
-    display:flex; align-items:center; gap:.75rem; font-weight:800; letter-spacing:.2px; font-size:clamp(1rem, 1.5vw + .8rem, 1.6rem);
+    display:flex; align-items:center; gap:.5rem; font-weight:800; font-size:1.1rem;
   }
-  .title .spark{width:1.8rem; height:1.8rem; border-radius:50%; background: conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent)); box-shadow:0 0 16px var(--accent-2);} 
-  .btn{border:0; padding:.6rem .9rem; border-radius:999px; color:#0b0730; background:linear-gradient(90deg, var(--accent-2), var(--accent)); font-weight:700; cursor:pointer; transition:transform .1s ease;}
-  .btn:focus-visible{outline:3px solid #fff}
-  .btn:active{transform:scale(.98)}
-  .ghost{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.18)}
+  .spark{width:1.2rem; height:1.2rem; border-radius:50%; background: conic-gradient(from 180deg, var(--accent), #00d4ff, var(--accent)); box-shadow:0 0 10px #00d4ff;} 
 
+  .btn-icon{
+    background:transparent; border:1px solid rgba(255,255,255,0.2); color:#fff;
+    border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:1.2rem;
+    transition: background 0.2s; display:grid; place-items:center;
+  }
+  .btn-icon:hover{background:rgba(255,255,255,0.1);}
+
+  /* --- MAIN LAYOUT --- */
   main{
-    display:grid; grid-template-columns: 240px 1fr; grid-template-rows:auto 1fr auto; gap:1rem; padding:1rem; max-width:1200px; margin:0 auto;
+    display:grid; 
+    grid-template-rows: auto 1fr auto; 
+    gap:1rem; padding:1rem; 
+    max-width:800px; margin:0 auto; height: calc(100% - 60px);
+    position: relative;
   }
-  @media (max-width: 900px){
-    main{grid-template-columns: 1fr;}
-    .destinos{grid-template-columns: 1fr;}
+
+  /* --- BIBLIOTECARIA --- */
+  .librarian-area {
+    display:flex; gap:1rem; align-items:flex-start; min-height:80px;
+    background: var(--panel); border-radius:12px; padding:1rem;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
   }
-  .panel{
-    background:linear-gradient(180deg, var(--panel), var(--panel-2)); border:1px solid rgba(255,255,255,.08);
-    border-radius:16px; padding:1rem; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  .avatar {
+    width:60px; height:60px; border-radius:50%; background:#fff; 
+    border:3px solid var(--accent); flex-shrink:0; overflow:hidden;
+    position:relative;
   }
-  .left{min-height:180px}
-  .queue{display:flex; gap:.5rem; flex-wrap:wrap}
-  .chip{padding:.35rem .6rem; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); font-size:.8rem}
-
-  .inspect{
-    display:grid; grid-template-columns: 1fr 320px; gap:1rem;
+  .dialog-bubble {
+    position:relative; background:rgba(255,255,255,0.1); 
+    padding:0.8rem; border-radius:0 12px 12px 12px;
+    font-size:0.95rem; line-height:1.3; color:#fff;
   }
-  @media (max-width: 900px){ .inspect{grid-template-columns: 1fr;} }
-
-  .book-area{display:flex; align-items:center; justify-content:center; min-height:260px; position:relative; overflow:hidden}
-  .book{
-    width:min(280px, 70vw); height:180px; border-radius:12px; background: linear-gradient(135deg,#ffe08a,#ffd1f3);
-    box-shadow: 0 12px 24px rgba(0,0,0,.35); border:3px solid rgba(255,255,255,.6);
-    transform: rotate(-2deg); transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+  .dialog-bubble::before {
+    content:''; position:absolute; top:0; left:-10px;
+    border-top:10px solid rgba(255,255,255,0.1); border-left:10px solid transparent;
   }
-  .book[draggable="true"]{cursor:grab}
-  .book:active{cursor:grabbing}
-  .cover{padding:12px; height:100%; display:flex; flex-direction:column; justify-content:space-between}
-  .cover .top{display:flex; align-items:center; justify-content:space-between}
-  .seal{width:42px; height:42px; border-radius:50%; display:inline-grid; place-items:center; background:#fff; color:#0b0730; font-weight:900; box-shadow:0 2px 8px rgba(0,0,0,.2)}
-  .seal.school{background: #e6fff4; color:#064b31; border:2px solid var(--safe)}
-  .ads{font-size:.75rem; color:#5b003b; font-weight:800; text-shadow:0 0 6px rgba(255,0,120,.8); animation: blink 1s infinite steps(1);}
-  @keyframes blink{50%{opacity:.3}}
-  .domain{font-size:1.05rem; font-weight:900; color:#130d3e; background:rgba(255,255,255,.7); padding:.25rem .5rem; border-radius:8px}
-  .tld{padding:.05rem .35rem; border-radius:6px; margin-left:.25rem; font-weight:900}
-  .tld.safe{background: #d5fff0; color:#066d51; border:1px solid var(--safe)}
-  .tld.warn{background: #fff6d6; color:#6a4a00; border:1px solid var(--warn)}
-  .tld.danger{background: #ffe0e0; color:#7a0010; border:1px solid var(--danger)}
-  .dino{width:46px; height:46px; border-radius:10px; background: radial-gradient(circle at 40% 30%, #89f7, #4ad);
-        display:inline-grid; place-items:center; color:#023; font-weight:900}
 
-  .rules{font-size:.95rem; line-height:1.25}
-  .rules ul{margin:.5rem 0 .25rem .9rem}
-  .rules strong{color:#fff}
+  /* --- STAGE LIBRO --- */
+  .book-stage {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    perspective: 1000px; position:relative;
+  }
+  
+  .book {
+    width: min(280px, 70vw); height: 180px;
+    background: linear-gradient(135deg, #2c3e50, #4ca1af);
+    border-radius: 6px 10px 10px 6px;
+    box-shadow: -5px 5px 15px rgba(0,0,0,0.5);
+    position: relative; border-left: 12px solid #1a252f;
+    display:flex; flex-direction:column; padding:15px; padding-left:25px;
+    transform: rotateY(-5deg); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .book[data-type="school"] { background: linear-gradient(135deg, #0ba360, #3cba92); border-left-color: #065f37; }
+  .book[data-type="safe"] { background: linear-gradient(135deg, #4facfe, #00f2fe); border-left-color: #0076a3; }
+  .book[data-type="warn"] { background: linear-gradient(135deg, #ff416c, #ff4b2b); border-left-color: #960018; }
+  .book[data-type="ads"] { background: linear-gradient(135deg, #ffecd2, #fcb69f); border-left-color: #d35400; }
+  
+  .book-seal {
+    width:45px; height:45px; background:#fff; border-radius:50%;
+    display:grid; place-items:center; font-size:1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    align-self: flex-end; margin-bottom: auto;
+  }
+  .book-title {
+    background: rgba(255,255,255,0.9); color:#000;
+    padding:8px 12px; border-radius:4px; font-weight:800; font-size:1.1rem;
+    text-align:center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    word-break: break-all;
+  }
+  .book-tld { color: var(--accent); }
 
-  .destinos{display:grid; grid-template-columns: repeat(3,1fr); gap:1rem}
-  .drop{min-height:120px; border:2px dashed rgba(255,255,255,.25); border-radius:14px; padding:1rem; display:grid; place-items:center; text-align:center; transition: all .12s ease; background: rgba(255,255,255,.03)}
-  .drop[aria-dropeffect="move"]{border-color: var(--accent)}
-  .drop.safe{border-color: var(--safe)}
-  .drop.warn{border-color: var(--warn)}
-  .drop.danger{border-color: var(--danger)}
-  .drop:focus-visible{outline:3px solid #fff}
-  .drop .name{font-weight:900}
+  /* Animaciones */
+  .anim-enter { animation: flyIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .anim-safe { animation: flySafe 0.5s forwards; }
+  .anim-warn { animation: flyWarn 0.5s forwards; }
+  .anim-help { animation: flyHelp 0.5s forwards; }
 
-  footer.panel{display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; justify-content:space-between}
-  .meters{display:flex; gap:1rem; align-items:center}
-  .bar{height:10px; width:180px; background:rgba(255,255,255,.12); border-radius:999px; overflow:hidden}
-  .fill{height:100%; width:0%; background:linear-gradient(90deg,var(--accent-2),var(--accent)); transition:width .2s ease}
-  .score{font-weight:900}
-  .badges{display:flex; gap:.4rem}
-  .badge{padding:.2rem .45rem; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:8px; font-size:.85rem}
+  @keyframes flyIn { from { opacity:0; transform: translateY(100px) rotateX(20deg); } to { opacity:1; transform: translateY(0) rotateY(-5deg); } }
+  @keyframes flySafe { to { opacity:0; transform: translate(-200px, 100px) rotate(-45deg); } }
+  @keyframes flyWarn { to { opacity:0; transform: translate(200px, 100px) rotate(45deg); } }
+  @keyframes flyHelp { to { opacity:0; transform: translateY(-100px) scale(0.5); } }
 
-  /* dialogs */
-  dialog{border:0; border-radius:16px; padding:0; overflow:hidden; color:#120c2b; max-width:min(760px, 96vw)}
-  dialog::backdrop{background:rgba(6,2,25,.6)}
-  .dlg{background:#fff; padding:1rem}
-  .dlg .hd{display:flex; gap:.5rem; align-items:center}
-  .dlg .hd h2{margin:.25rem 0}
-  .dlg .content{display:grid; gap:.5rem}
-  .dlg .actions{display:flex; justify-content:flex-end; gap:.5rem; margin-top:.5rem}
-  .video-demo{background:#000; color:#fff; height:160px; border-radius:12px; display:grid; place-items:center; font-weight:800}
+  /* --- CONTROLES --- */
+  .controls {
+    display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.8rem;
+    padding-bottom: 1rem;
+  }
+  .btn-action {
+    background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 15px 5px; color: #fff; cursor: pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition: all 0.15s; position: relative;
+  }
+  .btn-action:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+  .btn-action:not(:disabled):hover { transform: translateY(-3px); background: rgba(255,255,255,0.1); border-color: #fff; }
+  .btn-action:not(:disabled):active { transform: scale(0.95); }
+  
+  .btn-key { 
+    position: absolute; top: -10px; background: #fff; color: #000; 
+    font-weight: bold; width: 24px; height: 24px; border-radius: 50%; 
+    display:grid; place-items:center; font-size: 0.8rem; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  }
+  
+  .btn-action.safe { border-bottom: 4px solid var(--safe); }
+  .btn-action.warn { border-bottom: 4px solid var(--warn); }
+  .btn-action.help { border-bottom: 4px solid var(--danger); }
 
-  /* announcements */
-  .toast{position:fixed; inset:auto 1rem 1rem auto; background:rgba(22,18,44,.9); color:#fff; padding:.6rem .8rem; border-radius:10px; border:1px solid rgba(255,255,255,.2); max-width: 340px}
-  .toast[hidden]{display:none}
+  .btn-icon-big { font-size: 2rem; margin-bottom: 5px; }
+  .btn-label { font-size: 0.9rem; font-weight: 700; line-height: 1.1; text-align: center; }
 
-  /* confetti */
-  .confetti{position:fixed; inset:0; pointer-events:none}
+  /* --- STATS --- */
+  .stats-bar {
+    display:flex; justify-content:space-between; align-items:center;
+    background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 20px;
+    font-size: 0.9rem; margin-bottom: 1rem;
+  }
+  .score-box { display:flex; gap:10px; }
+  .progress-container { width: 100px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow:hidden; }
+  .progress-fill { width: 0%; height: 100%; background: var(--gold); transition: width 0.3s; }
 
-  /* subtle float */
-  .float{animation:float 2.2s ease-in-out infinite}
-  @keyframes float{50%{transform: translateY(-4px) rotate(-1deg)}}
+  /* --- MODAL --- */
+  .overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100;
+    display:grid; place-items:center; padding:1rem;
+    opacity:0; pointer-events:none; transition: opacity 0.3s;
+  }
+  .overlay.active { opacity:1; pointer-events:all; }
+  
+  .modal {
+    background: #fff; color: #1a1a1a; max-width: 500px; width: 100%;
+    border-radius: 16px; padding: 2rem; text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: translateY(20px);
+    transition: transform 0.3s;
+  }
+  .overlay.active .modal { transform: translateY(0); }
+  .modal h2 { margin-top:0; color: var(--accent); }
+  .modal p { font-size: 1.1rem; line-height: 1.5; color: #444; }
+  
+  .btn-start {
+    background: var(--accent); color: white; border: none;
+    padding: 12px 30px; font-size: 1.1rem; font-weight: bold;
+    border-radius: 50px; cursor: pointer; margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(94, 73, 255, 0.4);
+    transition: transform 0.1s;
+  }
+  .btn-start:hover { transform: scale(1.05); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #333; color: #fff; padding: 10px 20px; border-radius: 30px;
+    opacity: 0; transition: all 0.3s; font-weight: bold; z-index: 50;
+    display: flex; gap: 10px; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { background: var(--safe); color: #003300; }
+  .toast.warning { background: var(--warn); color: #554400; }
+  .toast.danger { background: var(--danger); color: #550000; }
+  .toast.info { background: var(--accent); color: #fff; }
+
+  /* Tutorial Mode */
+  body.tutorial-mode .btn-action { filter: grayscale(1); opacity: 0.4; }
+  body.tutorial-mode .btn-action.highlight { filter: none; opacity: 1; border-color: var(--gold); transform: scale(1.05); box-shadow: 0 0 20px var(--gold); animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 5px var(--gold); } }
+
 </style>
 </head>
 <body>
-  <header>
-    <div class="title" aria-label="Título del juego">
-      <div class="spark" aria-hidden="true"></div>
-      <span>La Biblioteca Infinita: <span style="opacity:.9">Guardianes del Conocimiento</span></span>
+
+<header>
+  <div class="title">
+    <div class="spark"></div>
+    LA BIBLIOTECA INFINITA
+  </div>
+  <button class="btn-icon" id="btnMute" title="Silenciar">🔊</button>
+</header>
+
+<main>
+  <div class="stats-bar">
+    <div class="score-box">
+      <span>⭐ Puntos: <b id="scoreVal">0</b></span>
+      <span style="margin-left:10px">❤️ Intentos: <b id="livesVal">3</b></span>
     </div>
-    <div class="actions">
-      <button id="btnReglas" class="btn ghost" aria-haspopup="dialog" aria-controls="dlgReglas">Reglas</button>
-      <button id="btnBriefing" class="btn ghost" aria-haspopup="dialog" aria-controls="dlgBriefing">Entrenamiento</button>
-      <button id="btnIniciar" class="btn" aria-label="Comenzar el juego">Comenzar</button>
+    <div style="display:flex; align-items:center; gap:5px">
+      <small>Progreso</small>
+      <div class="progress-container"><div class="progress-fill" id="progBar"></div></div>
     </div>
-  </header>
+  </div>
 
-  <main aria-describedby="sr-help">
-    <p id="sr-help" class="visually-hidden">Usa Tab para moverte, Enter para soltar el libro en un destino. Teclas rápidas: 1 Sala Segura, 2 Cuarentena, 3 Mostrador de Ayuda.</p>
-
-    <section class="panel left" aria-label="Pila de libros entrantes">
-      <h2 style="margin-top:0">Pila de libros</h2>
-      <div id="queue" class="queue" aria-live="polite"></div>
-    </section>
-
-    <section class="panel inspect" aria-label="Área de inspección">
-      <div class="book-area" id="bookArea">
-      </div>
-      <aside class="panel rules" aria-label="Reglas visibles">
-        <h3 style="margin-top:0">📜 Reglas</h3>
-        <ul>
-          <li><strong>Plataforma escolar/oficial</strong> (escudo): <span style="color:var(--safe);font-weight:800">Sala Segura</span>.</li>
-          <li><strong>Terminaciones confiables</strong> <code>.edu</code> <code>.org</code> <code>.gob</code>: generalmente <span style="color:var(--safe);font-weight:800">Seguras</span> si no hay señales raras.</li>
-          <li><strong>Terminaciones dudosas</strong> <code>.biz</code> <code>.info</code> o combinaciones como <em>.org.biz</em>: <span style="color:var(--warn);font-weight:800">Cuarentena</span>.</li>
-          <li><strong>Si dudas</strong>, usa <span style="color:var(--accent-2);font-weight:800">Mostrador de Ayuda</span>.</li>
-        </ul>
-      </aside>
-    </section>
-
-    <section class="panel destinos" aria-label="Destinos">
-      <button id="dropSegura" class="drop safe" role="button" aria-label="Sala Segura" aria-dropeffect="none" data-destino="SEGURA">
-        <div class="name">✅ Sala Segura</div>
-        <div class="hint">(Tecla 1)</div>
-      </button>
-      <button id="dropCuarentena" class="drop warn" role="button" aria-label="Zona de Cuarentena" aria-dropeffect="none" data-destino="CUARENTENA">
-        <div class="name">❓ Zona de Cuarentena</div>
-        <div class="hint">(Tecla 2)</div>
-      </button>
-      <button id="dropAyuda" class="drop danger" role="button" aria-label="Mostrador de Ayuda" aria-dropeffect="none" data-destino="AYUDA">
-        <div class="name">🧑‍🏫 Mostrador de Ayuda</div>
-        <div class="hint">(Tecla 3)</div>
-      </button>
-    </section>
-
-    <footer class="panel" aria-label="Progreso y puntuación">
-      <div class="meters">
-        <div class="badge" aria-live="polite">Libro: <span id="progLibro">0</span>/10</div>
-        <div class="badge">Errores graves restantes: <span id="erroresRestantes">3</span></div>
-        <div class="bar" aria-label="Barra de progreso"><div id="fill" class="fill"></div></div>
-      </div>
-      <div class="score" aria-live="polite">Puntos de Confianza: <span id="puntos">0</span></div>
-      <div class="badges" aria-live="polite">
-        <span class="badge" id="badgePerfecto" hidden>✨ ¡Ronda perfecta!</span>
-      </div>
-    </footer>
-  </main>
-
-  <div id="toast" class="toast" role="status" aria-live="assertive" hidden></div>
-  <canvas id="confetti" class="confetti" width="0" height="0" aria-hidden="true"></canvas>
-
-  <dialog id="dlgReglas" aria-label="Reglas del juego">
-    <div class="dlg">
-      <div class="hd"><div class="seal school" aria-hidden="true">📚</div><h2>Reglas del Guardián</h2></div>
-      <div class="content">
-        <ul>
-          <li>Escudo escolar = plataforma oficial → Sala Segura.</li>
-          <li>.edu / .org / .gob = generalmente confiables si no hay señales extrañas.</li>
-          <li>.biz / .info o terminaciones mezcladas = ¡Cuarentena!</li>
-          <li>Si dudas, ¡pide ayuda! (Mostrador de Ayuda)</li>
-        </ul>
-      </div>
-      <div class="actions">
-        <button class="btn ghost" data-close>Listo</button>
-      </div>
+  <div class="librarian-area">
+    <div class="avatar">
+      <div style="width:100%; height:100%; display:grid; place-items:center; font-size:35px; background:#eee;">👩‍🏫</div>
     </div>
-  </dialog>
-
-  <dialog id="dlgBriefing" aria-label="Entrenamiento">
-    <div class="dlg">
-      <div class="hd"><div class="seal" aria-hidden="true">🎧</div><h2>Entrenamiento con la Bibliotecaria</h2></div>
-      <div class="content">
-        <div class="video-demo" aria-hidden="true">Voz en off + mini demo</div>
-        <ol>
-          <li>Libro escolar con escudo → <strong>Sala Segura</strong>.</li>
-          <li>Terminaciones <code>.edu .org .gob</code> → <strong>Confiables</strong>.</li>
-          <li><code>.biz .info</code> o anuncios parpadeantes → <strong>Cuarentena</strong> o <strong>Ayuda</strong>.</li>
-        </ol>
-        <p>Cuando estés listo, pulsa “Comenzar a clasificar”.</p>
-      </div>
-      <div class="actions">
-        <button class="btn" id="btnComenzar">Comenzar a clasificar</button>
-      </div>
+    <div class="dialog-bubble" id="librarianText">
+      ¡Bienvenido, Guardián! Esperando iniciar sistema...
     </div>
-  </dialog>
+  </div>
 
-  <dialog id="dlgFin" aria-label="Fin de la ronda">
-    <div class="dlg">
-      <div class="hd"><div class="seal" aria-hidden="true">🔑</div><h2 id="finTitulo">Llave Dorada de la Biblioteca</h2></div>
-      <div class="content">
-        <p id="finResumen"></p>
-        <p class="frase" id="frasePoder" hidden>“¡Con ojo de guardián y mucha atención, protejo a mi mundo de la desinformación!”</p>
-      </div>
-      <div class="actions">
-        <button class="btn" id="btnReintentar">Reintentar ronda</button>
-      </div>
-    </div>
-  </dialog>
+  <div class="book-stage" id="stage"></div>
 
-  <script>
-  const LIBROS_BASE = [
-    {
-      id: 1,
-      titulo: "TareasColegioSol.net",
-      pistas: { logoEscolar: true, terminacion: ".net", anuncios: false, ambiguo: false },
-      destinoCorrecto: "SEGURA"
+  <div class="controls" id="controls">
+    <button class="btn-action safe" id="btn1" onclick="playerAction('safe')">
+      <div class="btn-key">1</div>
+      <div class="btn-icon-big">✅</div>
+      <div class="btn-label">SALA<br>SEGURA</div>
+    </button>
+    <button class="btn-action warn" id="btn2" onclick="playerAction('warn')">
+      <div class="btn-key">2</div>
+      <div class="btn-icon-big">❓</div>
+      <div class="btn-label">ZONA<br>CUARENTENA</div>
+    </button>
+    <button class="btn-action help" id="btn3" onclick="playerAction('help')">
+      <div class="btn-key">3</div>
+      <div class="btn-icon-big">🧑‍🏫</div>
+      <div class="btn-label">MOSTRADOR<br>AYUDA</div>
+    </button>
+  </div>
+</main>
+
+<div class="overlay active" id="startOverlay">
+  <div class="modal">
+    <div style="font-size:3rem; margin-bottom:10px">📚</div>
+    <h2>Guardianes del Conocimiento</h2>
+    <p>¡Hola Guardián! La Biblioteca Infinita tiene nuevos libros y necesito tu ayuda para organizarlos.</p>
+    <p>¿Estás listo para el entrenamiento?</p>
+    <button class="btn-start" onclick="iniciarTutorial()">¡Comenzar Entrenamiento!</button>
+  </div>
+</div>
+
+<div class="overlay" id="endOverlay">
+  <div class="modal">
+    <div style="font-size:3rem; margin-bottom:10px" id="endIcon">🏆</div>
+    <h2 id="endTitle">¡Misión Cumplida!</h2>
+    <p id="endMsg">Resumen del juego...</p>
+    <button class="btn-start" onclick="restartGame()">Jugar Otra Vez</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toastIcon">ℹ️</span> <span id="toastMsg">Mensaje</span>
+</div>
+
+<script>
+  /* --- CONFIGURACIÓN --- */
+  const GAME = {
+    state: 'MENU', 
+    score: 0,
+    lives: 3,
+    bookIndex: 0,
+    tutorialStep: 0,
+    currentBook: null,
+    queue: []
+  };
+
+  const AUDIO_CTX = new (window.AudioContext || window.webkitAudioContext)();
+  let IS_MUTED = false;
+
+  // Libros Tutorial
+  const TUTORIAL_BOOKS = [
+    { 
+      id: 'tut1', title: 'MiEscuela.edu.mx', tld: '.edu.mx', type: 'school', correct: 'safe', 
+      msg: '¡Hola! Primero, mira este libro. Tiene el <b>escudo de nuestra escuela</b>. ¡Es nuestro patio digital! Estos siempre van a la <b>Sala Segura (1)</b>.' 
     },
-    {
-      id: 2,
-      titulo: "museodeciencias.org",
-      pistas: { logoEscolar: false, terminacion: ".org", anuncios: false, ambiguo: false },
-      destinoCorrecto: "SEGURA"
+    { 
+      id: 'tut2', title: 'CienciaDivertida.org', tld: '.org', type: 'safe', correct: 'safe', 
+      msg: 'Ahora mira el final del título. Termina en <b>.org</b>. Las terminaciones <b>.edu, .gob y .org</b> suelen ser confiables. ¡A la <b>Sala Segura (1)</b>!' 
     },
-    {
-      id: 3,
-      titulo: "juegosymas.info",
-      pistas: { logoEscolar: false, terminacion: ".info", anuncios: true, ambiguo: false },
-      destinoCorrecto: "CUARENTENA"
+    { 
+      id: 'tut3', title: 'GanarPremios.biz', tld: '.biz', type: 'warn', correct: 'warn', 
+      msg: '¡Alerta! Mira este libro. Tiene una terminación rara <b>.biz</b> y portada roja sospechosa. Los sitios engañosos o con virus van a la <b>Zona de Cuarentena (2)</b>.' 
     },
-    {
-      id: 4,
-      titulo: "animalesfantasticos.com",
-      pistas: { logoEscolar: false, terminacion: ".com", anuncios: false, ambiguo: true },
-      destinoCorrecto: "AYUDA"
-    },
-    {
-      id: 5,
-      titulo: "museodeciencias.org.biz",
-      pistas: { logoEscolar: false, terminacion: ".biz", anuncios: false, ambiguo: false },
-      destinoCorrecto: "CUARENTENA"
+    { 
+      id: 'tut4', title: 'JuegosGratis.info', tld: '.info', type: 'ads', correct: 'help', 
+      msg: 'Finalmente, este termina en <b>.info</b> y tiene anuncios extraños. Si no estás seguro de dónde va, ¡no adivines! Usa el <b>Mostrador de Ayuda (3)</b>.' 
     }
   ];
-  const state = {
-    ronda: [],
-    idx: 0,
-    puntos: 0,
-    graves: 0,
-    ayudasBien: 0,
-    confiablesPorDominio: 0,
+
+  // Datos para Generación Aleatoria
+  const DOMAINS = {
+    safe: ['.edu', '.gob', '.org'],
+    ambiguous: ['.com', '.net'],
+    bad: ['.biz', '.info', '.xyz', '.net.biz']
   };
-  const $ = (sel) => document.querySelector(sel);
-  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-  function speak(text){
-    try{
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'es-MX';
-      u.rate = 1; u.pitch = 1; u.volume = 1;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
-    }catch(e){}
+  
+  // Lista ampliada para mejor aleatoriedad
+  const NAMES = [
+    'PlanetaAnimal', 'HistoriaMundial', 'MatematicasFaciles', 'NoticiasVirales', 'GanaPremios', 
+    'ClubLectura', 'MuseoVirtual', 'VideojuegosPro', 'RecetasAbuela', 'EspacioExterior', 
+    'DinosauriosVivos', 'RobotAmigo', 'SuperCoche', 'MagiaNegra', 'TrucosFortnite', 'DescargaYa',
+    'AulaCiencia', 'AyudaTareas', 'CuentosMagicos', 'LaboratorioX'
+  ];
+
+  /* Función de barajado (Fisher-Yates) */
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   }
-  const audioCtx = (()=>{ try{ return new (window.AudioContext||window.webkitAudioContext)(); }catch{ return null } })();
-  function beep(freq=600, dur=0.08, type='triangle'){
-    if(!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.setValueAtTime(.15, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime+dur); o.stop(audioCtx.currentTime+dur);
+
+  /* Generador de Cola Balanceada y Aleatoria */
+  function generarColaDeJuego() {
+    let cola = [];
+    
+    // Barajamos nombres para no repetir
+    const shuffledNames = shuffleArray([...NAMES]);
+    
+    // Crear "Bolsa" de libros: 3 Seguros, 3 Malos, 4 Ambiguos/Ayuda = 10 Total
+    const tipos = [
+      'safe', 'safe', 'safe',
+      'bad', 'bad', 'bad',
+      'ambiguous', 'ambiguous', 'ambiguous', 'ambiguous'
+    ];
+    
+    // Barajar los tipos
+    const shuffledTypes = shuffleArray(tipos);
+    
+    for(let i=0; i<10; i++) {
+      let type = shuffledTypes[i];
+      let book = {};
+      let name = shuffledNames[i];
+      
+      if(type === 'safe') {
+        let tld = DOMAINS.safe[Math.floor(Math.random()*DOMAINS.safe.length)];
+        book = { title: name + tld, tld: tld, type: 'safe', correct: 'safe' };
+      } else if (type === 'bad') {
+        let tld = DOMAINS.bad[Math.floor(Math.random()*DOMAINS.bad.length)];
+        let isTrap = Math.random() < 0.5;
+        let fullTld = isTrap ? '.org.biz' : tld;
+        book = { title: name + fullTld, tld: fullTld, type: isTrap ? 'warn' : 'ads', correct: 'warn' };
+      } else { // ambiguous
+        let tld = DOMAINS.ambiguous[Math.floor(Math.random()*DOMAINS.ambiguous.length)];
+        book = { title: name + tld, tld: tld, type: 'safe', correct: 'help' };
+      }
+      cola.push(book);
+    }
+    return cola;
   }
-  function bookClickEffect(el){ el.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:250}); }
-  function showToast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; setTimeout(()=>t.hidden=true, 2200); }
-  const TLD_SAFE = ['.edu','.org','.gob'];
-  const TLD_WARN = ['.biz','.info'];
-  const TLD_NEUTRAL = ['.com','.net'];
-  const NOMBRES = ['planetario','biblioteca','aprendefacil','museo','clubrobot','tallerideas','descubre','aulaonline','animales','viajes','cuento','noticias','videojuegos','ciencia','arte','historia'];
-  function generarLibroAleatorio(id){
-    const base = NOMBRES[Math.floor(Math.random()*NOMBRES.length)];
-    const roll = Math.random();
-    let tld = roll<.35? TLD_SAFE[Math.floor(Math.random()*TLD_SAFE.length)] : roll<.7? TLD_NEUTRAL[Math.floor(Math.random()*TLD_NEUTRAL.length)] : TLD_WARN[Math.floor(Math.random()*TLD_WARN.length)];
-    let tricky = Math.random()<.15;
-    let titulo = base + (Math.random()<.4? 'de' : '') + 'ciencias';
-    if(tricky && tld === '.org') titulo += '.org.biz'; else titulo += tld;
-    const logoEscolar = Math.random()<.18;
-    const anuncios = !logoEscolar && (tld==='.info' || Math.random()<.2);
-    const ambiguo = !logoEscolar && !anuncios && (tld==='.com') && Math.random()<.6;
-    const pistas = {logoEscolar, terminacion: tricky? '.biz' : tld, anuncios, ambiguo};
-    let destinoCorrecto = 'CUARENTENA';
-    if(logoEscolar) destinoCorrecto = 'SEGURA';
-    else if(tricky || TLD_WARN.includes(pistas.terminacion)) destinoCorrecto = 'CUARENTENA';
-    else if(ambiguo) destinoCorrecto = 'AYUDA';
-    else if(TLD_SAFE.includes(pistas.terminacion)) destinoCorrecto = 'SEGURA';
-    else if(pistas.terminacion==='.com' || pistas.terminacion==='.net') destinoCorrecto = 'AYUDA';
-    return { id, titulo, pistas, destinoCorrecto };
+
+  /* --- SISTEMA DE AUDIO --- */
+  function playSound(type) {
+    if(IS_MUTED) return;
+    if(AUDIO_CTX.state === 'suspended') AUDIO_CTX.resume();
+    const osc = AUDIO_CTX.createOscillator();
+    const gain = AUDIO_CTX.createGain();
+    
+    if(type === 'correct') {
+      osc.type = 'sine'; osc.frequency.setValueAtTime(500, AUDIO_CTX.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1000, AUDIO_CTX.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.1, AUDIO_CTX.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, AUDIO_CTX.currentTime + 0.3);
+      osc.start(); osc.stop(AUDIO_CTX.currentTime + 0.3);
+    } else if(type === 'error') {
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, AUDIO_CTX.currentTime);
+      osc.frequency.linearRampToValueAtTime(100, AUDIO_CTX.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.1, AUDIO_CTX.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, AUDIO_CTX.currentTime + 0.3);
+      osc.start(); osc.stop(AUDIO_CTX.currentTime + 0.3);
+    } else if(type === 'pop') {
+      osc.type = 'triangle'; osc.frequency.setValueAtTime(400, AUDIO_CTX.currentTime);
+      gain.gain.setValueAtTime(0.05, AUDIO_CTX.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, AUDIO_CTX.currentTime + 0.1);
+      osc.start(); osc.stop(AUDIO_CTX.currentTime + 0.1);
+    }
+    osc.connect(gain); gain.connect(AUDIO_CTX.destination);
   }
-  function barajar(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
-  function renderQueue(){
-    const q = $('#queue'); q.innerHTML='';
-    state.ronda.slice(state.idx+1).forEach((b)=>{
-      const chip = document.createElement('span'); chip.className='chip'; chip.textContent = (b.titulo.length>18? b.titulo.slice(0,18)+'…': b.titulo);
-      chip.setAttribute('aria-hidden','true'); q.appendChild(chip);
+
+  function speak(text) {
+    if(IS_MUTED || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const cleanText = text.replace(/<[^>]*>?/gm, '');
+    const u = new SpeechSynthesisUtterance(cleanText);
+    u.lang = 'es-MX'; u.rate = 1.1; u.pitch = 1.1;
+    window.speechSynthesis.speak(u);
+  }
+
+  /* --- LOGICA UI --- */
+  function updateUI() {
+    document.getElementById('scoreVal').innerText = GAME.score;
+    document.getElementById('livesVal').innerText = GAME.lives;
+    let total = GAME.state === 'TUTORIAL' ? 4 : 10;
+    let current = GAME.state === 'TUTORIAL' ? GAME.tutorialStep : GAME.bookIndex;
+    let pct = (current / total) * 100;
+    document.getElementById('progBar').style.width = pct + '%';
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    const i = document.getElementById('toastIcon');
+    const m = document.getElementById('toastMsg');
+    t.className = `toast show ${type}`;
+    i.innerText = type === 'success' ? '✅' : type === 'danger' ? '🚨' : type === 'warning' ? '⚠️' : 'ℹ️';
+    m.innerText = msg;
+    setTimeout(() => t.className = 'toast', 2500);
+  }
+
+  function setLibrarianText(html) {
+    const el = document.getElementById('librarianText');
+    el.innerHTML = html;
+    speak(html);
+  }
+
+  function renderBook(bookData) {
+    const stage = document.getElementById('stage');
+    stage.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'book anim-enter';
+    div.dataset.type = bookData.type;
+    
+    let seal = '📖';
+    if(bookData.type === 'school') seal = '🏫';
+    if(bookData.type === 'ads') seal = '⚠️';
+    if(bookData.type === 'warn') seal = '🦠';
+
+    const titleParts = bookData.title.split(bookData.tld);
+    const displayTitle = titleParts[0] + `<span class="book-tld">${bookData.tld}</span>`;
+
+    div.innerHTML = `<div class="book-title">${displayTitle}</div><div class="book-seal">${seal}</div>`;
+    stage.appendChild(div);
+    playSound('pop');
+  }
+
+  /* --- TUTORIAL --- */
+  function iniciarTutorial() {
+    document.getElementById('startOverlay').classList.remove('active');
+    GAME.state = 'TUTORIAL';
+    GAME.tutorialStep = 0;
+    document.body.classList.add('tutorial-mode');
+    runTutorialStep();
+  }
+
+  function runTutorialStep() {
+    if(GAME.tutorialStep >= TUTORIAL_BOOKS.length) {
+      finTutorial();
+      return;
+    }
+    const book = TUTORIAL_BOOKS[GAME.tutorialStep];
+    GAME.currentBook = book;
+    renderBook(book);
+    setLibrarianText(book.msg);
+    updateUI();
+    const btns = ['safe', 'warn', 'help']; 
+    const map = { 'safe': 'btn1', 'warn': 'btn2', 'help': 'btn3' };
+    btns.forEach(b => {
+      const el = document.getElementById(map[b]);
+      el.disabled = (b !== book.correct);
+      if(b === book.correct) el.classList.add('highlight');
+      else el.classList.remove('highlight');
     });
   }
-  function renderLibro(){
-    const area = $('#bookArea'); area.innerHTML = '';
-    const libro = state.ronda[state.idx];
-    if(!libro){ area.innerHTML = '<p>¡No hay más libros! Pulsa Reintentar.</p>'; return; }
-    const book = document.createElement('div'); book.className='book float'; book.tabIndex=0; book.setAttribute('role','img'); book.setAttribute('aria-label', `Portada del libro ${libro.titulo}`);
-    book.draggable = true; book.id='book';
-    book.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', 'book'); setDropEffect('move'); });
-    book.addEventListener('dragend', ()=>{ setDropEffect('none'); });
-    const cover = document.createElement('div'); cover.className='cover';
-    const top = document.createElement('div'); top.className='top';
-    const seal = document.createElement('div');
-    if(libro.pistas.logoEscolar){ seal.className='seal school'; seal.title='Plataforma escolar'; seal.textContent='🏫'; }
-    else if(libro.pistas.anuncios){ seal.className='seal'; seal.innerHTML='<span class="ads">ANUNCIOS</span>'; seal.title='Anuncios parpadeantes'; }
-    else { seal.className='seal'; seal.textContent='📖'; }
-    const icon = document.createElement('div'); icon.className='dino'; icon.textContent='🦕'; icon.title='Ilustración educativa';
-    top.appendChild(seal); top.appendChild(icon);
-    const domain = document.createElement('div'); domain.className='domain';
-    const titulo = libro.titulo;
-    const tld = libro.pistas.terminacion;
-    const base = titulo.replace(tld,'');
-    const spanBase = document.createElement('span'); spanBase.textContent = base;
-    const spanTld = document.createElement('span'); spanTld.textContent = tld; spanTld.className='tld '+(TLD_SAFE.includes(tld)?'safe': TLD_WARN.includes(tld)? 'danger' : 'warn'); spanTld.setAttribute('aria-label','terminación de dominio');
-    domain.appendChild(spanBase); domain.appendChild(spanTld);
-    cover.appendChild(top); cover.appendChild(domain);
-    book.appendChild(cover);
-    book.addEventListener('click', ()=>bookClickEffect(book));
-    area.appendChild(book);
-    renderQueue();
-    updateProgress();
+
+  function finTutorial() {
+    GAME.state = 'PLAYING';
+    GAME.bookIndex = 0;
+    document.body.classList.remove('tutorial-mode');
+    ['btn1','btn2','btn3'].forEach(id => {
+      const el = document.getElementById(id);
+      el.disabled = false;
+      el.classList.remove('highlight');
+    });
+    GAME.queue = generarColaDeJuego();
+    setLibrarianText("¡Entrenamiento completo! Ahora te toca a ti. <b>Clasifica 10 libros</b>. ¡Suerte!");
+    nextBook();
   }
-  function setDropEffect(mode){
-    $$('#dropSegura, #dropCuarentena, #dropAyuda').forEach(z=>z.setAttribute('aria-dropeffect', mode));
+
+  /* --- GAME LOGIC --- */
+  function nextBook() {
+    if(GAME.bookIndex >= GAME.queue.length) {
+      endGame(true);
+      return;
+    }
+    GAME.currentBook = GAME.queue[GAME.bookIndex];
+    renderBook(GAME.currentBook);
+    updateUI();
   }
-  function evaluar(libro, destino){
-    let tipoFeedback = '';
-    let correcto = false;
-    let grave = false; let menor = false; let bonoAyuda = false; let confiableDominio = false;
-    if(destino === libro.destinoCorrecto){
-      correcto = true;
-      if(destino==='AYUDA'){ bonoAyuda = true; }
-      if(destino==='SEGURA' && ['.edu','.org','.gob'].includes(libro.pistas.terminacion)) confiableDominio = true;
+
+  function playerAction(action) {
+    if(!GAME.currentBook) return;
+    const bookEl = document.querySelector('.book');
+    let points = 0;
+    
+    if(action === 'help') {
+      handleHelpRequest(bookEl);
+      return; 
+    }
+
+    if(GAME.state === 'TUTORIAL') {
+       if(action === GAME.currentBook.correct) stepSuccess(action, bookEl);
+       return;
+    }
+
+    if(action === GAME.currentBook.correct || (GAME.currentBook.correct === 'help' && action === 'warn')) {
+      points = 10;
+      playSound('correct');
+      showToast("¡Correcto!", "success");
+      setLibrarianText("¡Bien visto!");
     } else {
-      if(libro.destinoCorrecto==='CUARENTENA' && destino==='SEGURA'){ grave = true; }
-      else if(libro.destinoCorrecto==='SEGURA' && destino==='CUARENTENA'){ menor = true; }
-      else if(libro.destinoCorrecto==='AYUDA') { menor = true; }
-      else { menor = true; }
+      playSound('error');
+      GAME.lives--;
+      GAME.score = Math.max(0, GAME.score - 5);
+      if(GAME.currentBook.correct === 'warn' && action === 'safe') {
+        showToast("¡PELIGRO! Era inseguro.", "danger");
+        setLibrarianText("¡Oh no! Ese libro tenía trucos.");
+      } else {
+        showToast("Ups, no era ahí.", "warning");
+        setLibrarianText("Más atención a las pistas.");
+      }
     }
-    if(correcto){ tipoFeedback = destino==='AYUDA' ? 'ayuda-bien' : 'correcto'; }
-    else { tipoFeedback = grave? 'error-grave' : 'error-menor'; }
-    return {correcto, grave, menor, bonoAyuda, confiableDominio, tipoFeedback};
+    animateAndNext(bookEl, action, points);
   }
-  function aplicarFeedback(tipo){
-    switch(tipo){
-      case 'correcto':
-        beep(740,.08,'sine'); beep(880,.08,'sine'); speak('¡Clasificación perfecta! ¡Has protegido a nuestros lectores!');
-        showToast('✅ ¡Clasificación perfecta!');
-        break;
-      case 'ayuda-bien':
-        beep(660,.07,'triangle'); speak('¡Excelente decisión! ¡Ante la duda, preguntar!');
-        showToast('🧑‍🏫 ¡Bien! Elegiste pedir ayuda.');
-        break;
-      case 'error-grave':
-        beep(200,.2,'square'); setTimeout(()=>beep(200,.2,'square'), 220);
-        speak('¡Alerta! Revisa las pistas con más cuidado.');
-        showToast('🚨 Error grave: libro peligroso en Sala Segura.');
-        $('#book').style.filter='hue-rotate(25deg)';
-        break;
-      case 'error-menor':
-        beep(400,.07,'sawtooth'); speak('Era seguro, pero buena precaución.');
-        showToast('ℹ️ No era la mejor opción. Piensa en las pistas.');
-        break;
+
+  function handleHelpRequest(bookEl) {
+    bookEl.classList.add('anim-help');
+    playSound('pop');
+    const hints = ["Déjame ver...", "Revisando bases de datos...", "Buena pregunta..."];
+    const intro = hints[Math.floor(Math.random()*hints.length)];
+    let bonus = 0;
+    let feedback = "";
+    
+    if(GAME.currentBook.correct === 'help' || GAME.currentBook.correct === 'warn') {
+      bonus = 15;
+      feedback = "¡Bien hecho! Es sospechoso, va a <b>Cuarentena</b>.";
+      showToast("¡Sabiduría! +15", "info");
+      playSound('correct');
+    } else {
+      bonus = 5;
+      feedback = "Es seguro, lo pondré en <b>Sala Segura</b>.";
+      showToast("Precavido +5", "info");
+      playSound('correct');
+    }
+    setLibrarianText(`<i>${intro}</i> ${feedback}`);
+    GAME.score += bonus;
+    updateUI();
+
+    setTimeout(() => {
+      if(GAME.state === 'TUTORIAL') {
+        GAME.tutorialStep++;
+        runTutorialStep();
+      } else {
+        GAME.bookIndex++;
+        nextBook();
+      }
+    }, 2500);
+  }
+
+  function stepSuccess(action, el) {
+    playSound('correct');
+    animateAndNext(el, action, 0);
+    setTimeout(() => { GAME.tutorialStep++; runTutorialStep(); }, 600);
+  }
+
+  function animateAndNext(el, action, points) {
+    if(action === 'safe') el.classList.add('anim-safe');
+    else if(action === 'warn') el.classList.add('anim-warn');
+    GAME.score += points;
+    updateUI();
+
+    if(GAME.lives <= 0) {
+      setTimeout(() => endGame(false), 500);
+      return;
+    }
+    if(GAME.state !== 'TUTORIAL') {
+      setTimeout(() => { GAME.bookIndex++; nextBook(); }, 600);
     }
   }
-  function actualizarPuntaje(res){
-    if(res.correcto){ state.puntos += 10; }
-    if(res.bonoAyuda){ state.puntos += 5; state.ayudasBien++; }
-    if(res.confiableDominio){ state.confiablesPorDominio++; }
-    if(res.grave){ state.puntos -= 15; state.graves++; $('#erroresRestantes').textContent = Math.max(0, 3 - state.graves); }
-    if(res.menor && !res.grave){ state.puntos -= 5; }
-    $('#puntos').textContent = state.puntos;
+
+  function endGame(win) {
+    GAME.state = 'END';
+    const ov = document.getElementById('endOverlay');
+    const tit = document.getElementById('endTitle');
+    const msg = document.getElementById('endMsg');
+    const ico = document.getElementById('endIcon');
+    ov.classList.add('active');
+    if(win) {
+      tit.innerText = "¡Misión Cumplida!";
+      ico.innerText = "🗝️";
+      msg.innerHTML = `¡Felicidades Guardián!<br>Has obtenido la <b>Llave Dorada</b>.<br>Puntuación Final: <b>${GAME.score}</b>`;
+      playSound('correct');
+    } else {
+      tit.innerText = "¡Alerta de Seguridad!";
+      ico.innerText = "🛑";
+      msg.innerHTML = "Se colaron libros peligrosos.<br>Repasemos las pistas.";
+      playSound('error');
+    }
   }
-  function nextOrEnd(){
-    if(state.graves>=3){ terminarRonda(false); return; }
-    state.idx++;
-    if(state.idx>=state.ronda.length){ terminarRonda(true); }
-    else { renderLibro(); }
-  }
-  function updateProgress(){
-    $('#progLibro').textContent = Math.min(state.idx+1, state.ronda.length);
-    const pct = (state.idx/state.ronda.length)*100; $('#fill').style.width = pct + '%';
-  }
-  function clasificar(destino){
-    const libro = state.ronda[state.idx]; if(!libro) return;
-    const res = evaluar(libro, destino);
-    aplicarFeedback(res.tipoFeedback);
-    ofrecerPistaSiFalla(res, libro);
-    actualizarPuntaje(res);
-    setTimeout(nextOrEnd, 250);
-  }
-  function ofrecerPistaSiFalla(res, libro){
-    if(res.correcto) return;
-    if(libro.pistas.terminacion){ showToast('💡 Mira el final del título: esa es la terminación.'); }
-    if(libro.titulo.includes('.org') && libro.pistas.terminacion!=='.org'){ showToast('💡 Si se parece a .org pero termina en otra cosa, no es confiable.'); }
-    if(!libro.pistas.logoEscolar && !libro.pistas.ambiguo){ showToast('💡 Si dudas, lleva el libro al Mostrador de Ayuda.'); }
-  }
-  function terminarRonda(victoria){
-    const dlg = $('#dlgFin');
-    const total = state.ronda.length;
-    const titulo = victoria && state.graves===0? '🏆 ¡Llave Dorada de la Biblioteca!' : (victoria? '¡Turno completado!' : 'Repaso necesario');
-    $('#finTitulo').textContent = titulo;
-    const resumen = `¡Turno completado! Clasificaste ${total} libros, identificaste ${state.confiablesPorDominio} sitios confiables por su dominio y usaste el Mostrador de Ayuda ${state.ayudasBien} ${state.ayudasBien===1?'vez':'veces'}.`;
-    $('#finResumen').textContent = resumen;
-    $('#frasePoder').hidden = !(victoria && state.graves===0);
-    if(victoria && state.graves===0){ lanzarConfeti(); speak('¡Magnífico! Ronda perfecta.'); }
-    dlg.showModal();
-  }
-  function lanzarConfeti(){
-    const c = $('#confetti'); const ctx = c.getContext('2d');
-    c.width = innerWidth; c.height = innerHeight;
-    const parts = Array.from({length: 120}, ()=>({
-      x: Math.random()*c.width, y: -20-Math.random()*c.height,
-      s: 4+Math.random()*6, vy: 2+Math.random()*3, vx: (-1+Math.random()*2), color:`hsl(${Math.random()*360},90%,60%)`
-    }));
-    let t=0; (function loop(){ ctx.clearRect(0,0,c.width,c.height); parts.forEach(p=>{ p.y+=p.vy; p.x+=p.vx; ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,p.s,p.s); }); t++; if(t<160) requestAnimationFrame(loop); })();
-    setTimeout(()=>{ c.width=0; c.height=0; }, 2200);
-  }
-  function wireDestinos(){
-    $$('#dropSegura, #dropCuarentena, #dropAyuda').forEach(btn=>{
-      btn.addEventListener('dragover', e=>{ e.preventDefault(); });
-      btn.addEventListener('drop', e=>{ e.preventDefault(); clasificar(btn.dataset.destino); setDropEffect('none'); });
-      btn.addEventListener('click', ()=>{ clasificar(btn.dataset.destino); });
-      btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); clasificar(btn.dataset.destino);} });
+
+  function restartGame() {
+    // Reset Total
+    GAME.score = 0;
+    GAME.lives = 3;
+    GAME.bookIndex = 0;
+    GAME.state = 'PLAYING';
+    GAME.queue = generarColaDeJuego();
+    
+    // UI Reset
+    document.getElementById('endOverlay').classList.remove('active');
+    document.body.classList.remove('tutorial-mode');
+    ['btn1','btn2','btn3'].forEach(id => {
+      const el = document.getElementById(id);
+      el.disabled = false;
+      el.classList.remove('highlight');
     });
-    window.addEventListener('keydown', (e)=>{
-      if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
-      if(e.key==='1') { $('#dropSegura').focus(); clasificar('SEGURA'); }
-      if(e.key==='2') { $('#dropCuarentena').focus(); clasificar('CUARENTENA'); }
-      if(e.key==='3') { $('#dropAyuda').focus(); clasificar('AYUDA'); }
-    });
+    
+    setLibrarianText("¡Nueva ronda! ¡A clasificar!");
+    nextBook();
   }
-  function iniciarJuego(){
-    state.ronda = [...LIBROS_BASE];
-    const needed = 10 - state.ronda.length;
-    for(let i=0;i<needed;i++){ state.ronda.push(generarLibroAleatorio(100+i)); }
-    const primerosCinco = LIBROS_BASE.slice(0,5);
-    const resto = state.ronda.slice(5);
-    state.ronda = [...primerosCinco, ...barajar(resto)];
-    state.idx = 0; state.puntos = 0; state.graves = 0; state.ayudasBien = 0; state.confiablesPorDominio = 0;
-    $('#puntos').textContent = '0'; $('#erroresRestantes').textContent = '3'; $('#badgePerfecto').hidden = true;
-    renderLibro();
-    speak('Bienvenido Guardián. Arrastra el libro o pulsa 1, 2 o 3 para clasificar.');
-  }
-  function siguienteLibro(){
-    nextOrEnd();
-  }
-  function setupDialogs(){
-    const r=$('#dlgReglas'); const b=$('#dlgBriefing');
-    $('#btnReglas').addEventListener('click', ()=>{ r.showModal(); });
-    $('#btnBriefing').addEventListener('click', ()=>{ b.showModal(); demoBriefing(); });
-    r.addEventListener('click', (e)=>{ if(e.target.hasAttribute('data-close')) r.close(); });
-    $('#btnComenzar').addEventListener('click', ()=>{ b.close(); iniciarJuego(); });
-    $('#btnIniciar').addEventListener('click', ()=>{ iniciarJuego(); });
-    $('#btnReintentar').addEventListener('click', ()=>{ $('#dlgFin').close(); iniciarJuego(); });
-  }
-  function demoBriefing(){
-    speak('Observa las pistas: si ves el escudo escolar, es plataforma oficial y va a Sala Segura. Las terminaciones punto edu, punto org y punto gob suelen ser confiables. Si ves punto biz o punto info, o anuncios parpadeantes, mándalo a Cuarentena. Si te quedas con duda, usa el Mostrador de Ayuda.');
-  }
-  function addSRHelpers(){
-    const style = document.createElement('style'); style.textContent = '.visually-hidden{position:absolute !important; height:1px; width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap;}'; document.head.appendChild(style);
-  }
-  async function registerSW(){
-    if(!('serviceWorker' in navigator)) return;
-    try{
-      const swCode = `self.addEventListener('install', e=>{e.waitUntil(caches.open('biblioteca-v1').then(c=>c.addAll(['./'])))});self.addEventListener('fetch', e=>{e.respondWith(caches.match(e.request).then(r=>r || fetch(e.request).catch(()=>caches.match('./'))))});`;
-      const blob = new Blob([swCode], {type:'text/javascript'});
-      const url = URL.createObjectURL(blob);
-      await navigator.serviceWorker.register(url);
-    }catch(e){}
-  }
-  function renderInicial(){
-    wireDestinos(); addSRHelpers(); setupDialogs(); renderQueue(); renderLibro(); registerSW();
-  }
-  window.iniciarJuego = iniciarJuego;
-  window.siguienteLibro = siguienteLibro;
-  window.renderLibro = renderLibro;
-  window.clasificar = clasificar;
-  window.evaluar = evaluar;
-  window.aplicarFeedback = aplicarFeedback;
-  window.actualizarPuntaje = actualizarPuntaje;
-  window.terminarRonda = terminarRonda;
-  document.addEventListener('DOMContentLoaded', renderInicial);
-  </script>
+
+  /* --- INPUTS --- */
+  document.addEventListener('keydown', (e) => {
+    if(document.querySelector('.overlay.active')) return;
+    if(e.key === '1') document.getElementById('btn1').click();
+    if(e.key === '2') document.getElementById('btn2').click();
+    if(e.key === '3') document.getElementById('btn3').click();
+  });
+
+  document.getElementById('btnMute').onclick = () => {
+    IS_MUTED = !IS_MUTED;
+    document.getElementById('btnMute').innerText = IS_MUTED ? '🔇' : '🔊';
+  };
+</script>
 </body>
 </html>
